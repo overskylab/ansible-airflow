@@ -6,6 +6,9 @@
       state: present
       update_cache: yes
 
+  - name: Install pre-dependencies
+    shell: "pip3 install --upgrade {{ airflow_pip_pre_dependencies }}"
+
   - name: Install python virtualenv
     pip:
       name: virtualenv
