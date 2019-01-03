@@ -6,12 +6,6 @@
       state: present
       update_cache: yes
 
-  - name: Install pip via pip3
-    shell: pip3 install --upgrade pip
-
-  - name: Install pip pre-dependencies
-    shell: pip install setuptools
-
   - name: Install python virtualenv
     pip:
       name: virtualenv
