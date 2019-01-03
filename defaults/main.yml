@@ -24,10 +24,6 @@ airflow_config_file_path: "{{ airflow_home_path }}/airflow.cfg"
 airflow_environment_file_path: "{{ airflow_environment_path }}/airflow"
 airflow_tmpfiles_file_path: "{{ airflow_tmpfiles_path }}/airflow.conf"
 
-airflow_pip_pre_dependencies:
-  - pip
-  - setuptools
-
 airflow_apt_denpendencies:
   - build-essential
   - linux-generic-lts-xenial
