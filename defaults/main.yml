@@ -1,0 +1,91 @@
+---
+airflow_service_name: airflow
+
+# Search files config
+airflow_search_config_path: "{{ playbook_dir }}/files/groups/{{ item }}/{{ airflow_service_name }}"
+airflow_search_config_paths: []
+airflow_host_config_file_path: "{{ airflow_host_config_path | default(inventory_hostname) }}/airflow.cfg.j2"
+
+airflow_user: airflow
+airflow_group: airflow
+airflow_all_in_one: no
+
+# Directories
+airflow_home_path: "/home/{{ airflow_user }}"
+airflow_log_path: "{{ airflow_home_path }}/logs"
+airflow_systemd_path: "/etc/systemd/system"
+airflow_environment_path: "/etc/sysconfig"
+airflow_pid_path: "/run/{{ airflow_service_name }}"
+airflow_tmpfiles_path: "/etc/tmpfiles.d"
+airflow_python_venv_path: "{{ airflow_home_path }}/vens/{{ airflow_service_name }}"
+
+# Application config
+airflow_config_file_path: "{{ airflow_home_path }}/airflow.cfg"
+airflow_environment_file_path: "{{ airflow_environment_path }}/airflow"
+airflow_tmpfiles_file_path: "{{ airflow_tmpfiles_path }}/airflow.conf"
+
+airflow_apt_denpendencies:
+  - build-essential
+  - linux-generic-lts-xenial
+  - binutils
+  - gcc
+  - make
+  - libssl-dev
+  - libffi-dev
+  - libkrb5-dev
+  - python-dev
+  - python3
+  - python3-dev
+  - python3-pip
+  - python3-wheel
+  # for connecting to external postgresql
+  - libpq-dev
+  - postgresql-client
+  - postgresql-client-common
+  - libmysqlclient-dev
+
+airflow_pip_dependencies:
+  - setuptools
+  - cryptography
+  - futures
+  - pandas
+  - SQLAlchemy
+  - psycopg2
+  - celery
+  - redis
+  - flower
+  - flask-bcrypt
+  - boto3
+  - ldap3
+  - pymssql
+  - azure-servicebus
+
+airflow_pip_packages:
+  - apache-airflow
+  - apache-airflow[async]
+  - apache-airflow[devel]
+  - apache-airflow[celery]
+  - apache-airflow[jdbc]
+  - apache-airflow[hdfs]
+  - apache-airflow[hive]
+  - apache-airflow[mysql]
+  - apache-airflow[password]
+  - apache-airflow[postgres]
+  - apache-airflow[s3]
+  - apache-airflow[slack]
+  - apache-airflow[rabbitmq]
+  - apache-airflow[redis]
+
+airflow_services:
+  - name: airflow-flower
+    enabled: yes
+  - name: airflow-kerberos
+    enabled: no
+  - name: airflow-scheduler
+    enabled: yes
+  - name: airflow-webserver
+    enabled: yes
+  - name: airflow-worker
+    enabled: yes
+
+airflow_fernet_key: CHANGEME

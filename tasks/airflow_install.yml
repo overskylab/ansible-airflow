@@ -1,0 +1,31 @@
+---
+- block: # installation
+  - name: Install APT denpendencies
+    apt:
+      name: "{{ airflow_apt_denpendencies }}"
+      state: present
+      update_cache: yes
+
+  - name: Install python virtualenv
+    pip:
+      name: virtualenv
+  
+  - name: Check {{ airflow_python_venv_path }} was existed
+    stat:
+      path: "{{ airflow_python_venv_path }}"
+    register: _airflow_python_venv
+
+  - name: Create python virtualenv
+    command: "virtualenv {{ airflow_python_venv_path }}"
+    become_user: "{{ airflow_user }}"
+    when: not _airflow_python_venv.stat.exists
+
+  # TODO (teerawat.n): May be stop airflow-kerberos service before install krb5 lib
+  - name: Install pip denpendencies packages
+    pip:
+      name: "{{ airflow_pip_dependencies }}"
+      virtualenv: "{{ airflow_python_venv_path }}"
+
+  - name: Install pip packages
+    shell: "source {{ airflow_python_venv_path }}/bin/activate; AIRFLOW_GPL_UNIDECODE=yes {{ airflow_python_venv_path }}/bin/pip install {{ item }}"
+    with_items: "{{ airflow_pip_packages }}"

@@ -1,0 +1,25 @@
+---
+- name: Restart airflow-flower
+  systemd:
+    name: airflow-flower
+    state: restarted
+
+- name: Restart airflow-kerberos
+  systemd:
+    name: airflow-kerberos
+    state: restarted
+
+- name: Restart airflow-scheduler
+  systemd:
+    name: airflow-scheduler
+    state: restarted
+
+- name: Restart airflow-webserver
+  systemd:
+    name: airflow-webserver
+    state: restarted
+
+- name: Restart airflow-worker
+  systemd:
+    name: airflow-worker
+    state: restarted

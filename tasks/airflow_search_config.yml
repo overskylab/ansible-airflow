@@ -1,0 +1,30 @@
+---
+- name: Set list of path to look for local airflow configuration directory
+  set_fact:
+    airflow_search_config_paths: "{{ airflow_search_config_paths }} + [ '{{ airflow_search_config_path }}' ]"
+  with_items: "{{ group_names }}"
+
+- name: Check if airflow configuration directory exists
+  stat:
+    path: "{{ item }}"
+  register: airflow_config_check
+  become: false
+  delegate_to: 127.0.0.1
+  with_first_found:
+    - files: "{{ airflow_search_config_paths }}"
+      skip: true
+
+- name: Set airflow configuration directory
+  set_fact:
+    airflow_host_config_path: "{{ airflow_config_check.results[0].stat.path }}"
+  when:
+    - airflow_config_check.results[0] is defined
+    - airflow_config_check.results[0].stat is defined
+    - airflow_config_check.results[0].stat.isdir
+
+- name: Check if airflow template configuration file is exists
+  stat:
+    path: "{{ airflow_host_config_file_path }}"
+  become: false
+  delegate_to: 127.0.0.1
+  register: airflow_config_check

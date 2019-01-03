@@ -1,0 +1,59 @@
+---
+- block: # drop config files
+  - name: Drop environment config file
+    template:
+      src: airflow.j2
+      dest: "{{ airflow_environment_file_path }}"
+      owner: "{{ airflow_user }}"
+      group: "{{ airflow_group }}"
+    register: _drop_env_config
+
+  - name: Drop tmpfiles
+    template:
+      src: airflow.conf.j2
+      dest: "{{ airflow_tmpfiles_file_path }}"
+      owner: "{{ airflow_user }}"
+      group: "{{ airflow_group }}"
+    register: _drop_tmpfiles
+
+  - name: Drop service systemd files
+    template:
+      src: "{{ item.name }}.service.j2"
+      dest: "{{ airflow_systemd_path }}/{{ item.name }}.service"
+      mode: 0644
+    with_items: "{{ airflow_services }}"
+    register: _drop_systemd
+
+  - name: Drop airflow configuration file
+    template:
+      src: "{{ airflow_host_config_file_path }}"
+      dest: "{{ airflow_config_file_path }}"
+      owner: root
+      group: root
+      mode: 0644
+    when: airflow_config_check.stat.exists
+    register: _drop_airflow_config
+
+
+- name: Initial DB
+  command: "{{ airflow_python_venv_path }}/bin/airflow initdb"
+  become_user: "{{ airflow_user }}"
+
+
+- block: # setup services
+  - name: Ensure services started and start up at boot
+    systemd:
+      name: "{{ item.name }}"
+      state: "{{ item.enabled | ternary('started', 'stopped') }}"
+      enabled: "{{ item.enabled }}"
+      daemon_reload: yes
+    with_items: "{{ airflow_services }}"
+
+- name: Restart services
+  systemd:
+    name: "{{ item.name }}"
+    state: "{{ item.enabled | ternary('restarted', 'stopped') }}"
+  with_items: "{{ airflow_services }}"
+  when: 
+    - item.enabled
+    - _drop_env_config.changed or _drop_tmpfiles.changed or _drop_systemd.changed or _drop_airflow_config
