@@ -35,6 +35,13 @@
 
 
 - block: # directories
+  - name: Ensure {{ airflow_dags_path }} directory is created
+    file:
+      path: "{{ airflow_dags_path }}"
+      state: directory
+      owner: "{{ airflow_user }}"
+      group: "{{ airflow_group }}"
+
   - name: Ensure {{ airflow_log_path }} directory is created
     file:
       path: "{{ airflow_log_path }}"

@@ -12,6 +12,7 @@ airflow_all_in_one: no
 
 # Directories
 airflow_home_path: "/home/{{ airflow_user }}"
+airflow_dags_path: "{{ airflow_home_path }}/dags"
 airflow_log_path: "{{ airflow_home_path }}/logs"
 airflow_systemd_path: "/etc/systemd/system"
 airflow_environment_path: "/etc/sysconfig"
