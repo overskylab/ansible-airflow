@@ -38,6 +38,7 @@
 - name: Initial DB
   command: "{{ airflow_python_venv_path }}/bin/airflow initdb"
   become_user: "{{ airflow_user }}"
+  run_once: yes
 
 
 - block: # setup services
